@@ -95,12 +95,12 @@ class PlayPublisherPlugin implements Plugin<Project> {
                 publishApkTask.group = PLAY_STORE_GROUP
 
                 def publishBundleTask = project.tasks.create(publishBundleTaskName, PlayPublishBundleTask)
-                publishApkTask.extension = extension
-                publishApkTask.playAccountConfig = playAccountConfig
-                publishApkTask.variant = variant
-                publishApkTask.inputFolder = playResourcesTask.outputFolder
-                publishApkTask.description = "Uploads the Bundle for the ${variant.name.capitalize()} build"
-                publishApkTask.group = PLAY_STORE_GROUP
+                publishBundleTask.extension = extension
+                publishBundleTask.playAccountConfig = playAccountConfig
+                publishBundleTask.variant = variant
+                publishBundleTask.inputFolder = playResourcesTask.outputFolder
+                publishBundleTask.description = "Uploads the Bundle for the ${variant.name.capitalize()} build"
+                publishBundleTask.group = PLAY_STORE_GROUP
 
                 def publishTask = project.tasks.create(publishTaskName)
                 publishTask.description = "Updates APK and play store listing for the ${variant.name.capitalize()} build"
@@ -121,7 +121,7 @@ class PlayPublisherPlugin implements Plugin<Project> {
                 publishBundleResTask.dependsOn publishBundleTask
                 publishBundleResTask.dependsOn publishListingTask
                 publishBundleTask.dependsOn playResourcesTask
-                publishBundleTask.dependsOn variant.assemble
+                publishBundleTask.dependsOn project.tasks.findByName("bundle${variant.name.capitalize()}")
             } else {
                 log.warn("Signing not ready. Did you specify a signingConfig for the variation ${variant.name.capitalize()}?")
             }

@@ -6,6 +6,7 @@ import com.google.api.client.http.FileContent
 import com.google.api.services.androidpublisher.model.ApkListing
 import com.google.api.services.androidpublisher.model.Bundle
 import com.google.api.services.androidpublisher.model.Track
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 
 class PlayPublishBundleTask extends PlayPublishTask {
@@ -19,6 +20,8 @@ class PlayPublishBundleTask extends PlayPublishTask {
     @TaskAction
     publishBundle() {
         publish()
+
+        logger.log(LogLevel.INFO, "Publishing bundle from available outputs: ${variant.outputs}")
 
         def versionCodes = variant.outputs
                 .findAll { variantOutput -> variantOutput instanceof AppBundleVariantBuildOutput }
