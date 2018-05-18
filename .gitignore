@@ -4,3 +4,5 @@ build
 .gradle
 local.properties
 userHome
+out
+classes

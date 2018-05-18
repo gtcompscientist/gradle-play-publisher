@@ -42,7 +42,9 @@ class PlayPublisherPlugin implements Plugin<Project> {
             def bootstrapTaskName = "bootstrap${variant.name.capitalize()}PlayResources"
             def playResourcesTaskName = "generate${variant.name.capitalize()}PlayResources"
             def publishApkTaskName = "publishApk${variant.name.capitalize()}"
+            def publishBundleTaskName = "publishBundle${variant.name.capitalize()}"
             def publishListingTaskName = "publishListing${variant.name.capitalize()}"
+            def publishBundleAndResourcesTaskName = "publishBundleAndResources${variant.name.capitalize()}"
             def publishTaskName = "publish${variant.name.capitalize()}"
 
             // Create and configure bootstrap task for this variant.
@@ -92,6 +94,14 @@ class PlayPublisherPlugin implements Plugin<Project> {
                 publishApkTask.description = "Uploads the APK for the ${variant.name.capitalize()} build"
                 publishApkTask.group = PLAY_STORE_GROUP
 
+                def publishBundleTask = project.tasks.create(publishBundleTaskName, PlayPublishBundleTask)
+                publishApkTask.extension = extension
+                publishApkTask.playAccountConfig = playAccountConfig
+                publishApkTask.variant = variant
+                publishApkTask.inputFolder = playResourcesTask.outputFolder
+                publishApkTask.description = "Uploads the Bundle for the ${variant.name.capitalize()} build"
+                publishApkTask.group = PLAY_STORE_GROUP
+
                 def publishTask = project.tasks.create(publishTaskName)
                 publishTask.description = "Updates APK and play store listing for the ${variant.name.capitalize()} build"
                 publishTask.group = PLAY_STORE_GROUP
@@ -101,6 +111,17 @@ class PlayPublisherPlugin implements Plugin<Project> {
                 publishTask.dependsOn publishListingTask
                 publishApkTask.dependsOn playResourcesTask
                 publishApkTask.dependsOn variant.assemble
+
+
+                def publishBundleResTask = project.tasks.create(publishBundleAndResourcesTaskName)
+                publishBundleResTask.description = "Updates Bundle and play store listing for the ${variant.name.capitalize()} build"
+                publishBundleResTask.group = PLAY_STORE_GROUP
+
+                // Attach tasks to task graph.
+                publishBundleResTask.dependsOn publishBundleTask
+                publishBundleResTask.dependsOn publishListingTask
+                publishBundleTask.dependsOn playResourcesTask
+                publishBundleTask.dependsOn variant.assemble
             } else {
                 log.warn("Signing not ready. Did you specify a signingConfig for the variation ${variant.name.capitalize()}?")
             }
