@@ -1,6 +1,5 @@
 package de.triplet.gradle.play
 
-import com.android.builder.model.AppBundleVariantBuildOutput
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
 import com.google.api.services.androidpublisher.model.ApkListing
@@ -21,11 +20,18 @@ class PlayPublishBundleTask extends PlayPublishTask {
     publishBundle() {
         publish()
 
-        logger.log(LogLevel.INFO, "Publishing bundle from available outputs: ${variant.outputs}")
+        def bundleOutput = new File(project.buildDir, "outputs/bundle/${variant.name}")
+        logger.log(LogLevel.INFO, "==========================================")
+        logger.log(LogLevel.INFO, "Publishing bundle from outputs:")
 
-        def versionCodes = variant.outputs
-                .findAll { variantOutput -> variantOutput instanceof AppBundleVariantBuildOutput }
-                .collect { variantOutput -> publishBundle(new FileContent(MIME_TYPE_BUNDLE, variantOutput.outputFile)) }
+
+        logger.log(LogLevel.INFO, "${bundleOutput.absolutePath}")
+
+        logger.log(LogLevel.INFO, "==========================================")
+
+        def versionCodes = bundleOutput.listFiles()
+                .findAll { variantOutput -> variantOutput.name.endsWith("aab") }
+                .collect { variantOutput -> publishBundle(new FileContent(MIME_TYPE_BUNDLE, variantOutput)) }
                 .collect { apk -> apk.getVersionCode() }
 
         def track = new Track().setVersionCodes(versionCodes)
@@ -40,8 +46,7 @@ class PlayPublishBundleTask extends PlayPublishTask {
                 .execute()
     }
 
-    Bundle publishBundle(bundleFile) {
-
+    Bundle publishBundle(FileContent bundleFile) {
         def bundle = edits.bundles()
                 .upload(variant.applicationId, editId, bundleFile)
                 .execute()
