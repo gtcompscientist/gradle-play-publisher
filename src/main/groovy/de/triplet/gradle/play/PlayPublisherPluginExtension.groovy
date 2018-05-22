@@ -30,4 +30,6 @@ class PlayPublisherPluginExtension {
 
     Double userFraction = 0.1
 
+    boolean draft = false
+
 }

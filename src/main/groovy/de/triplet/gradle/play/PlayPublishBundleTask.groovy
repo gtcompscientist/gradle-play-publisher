@@ -43,6 +43,8 @@ class PlayPublishBundleTask extends PlayPublishTask {
         if (extension.track == 'rollout') {
             release.setUserFraction(extension.userFraction)
             release.setStatus('inProgress')
+        } else if (extension.track == 'draft') {
+            release.setStatus('draft')
         } else {
             release.setStatus('completed')
         }

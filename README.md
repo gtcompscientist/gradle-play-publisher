@@ -122,12 +122,23 @@ As a default your APK is published to the alpha track and you can promote it to 
 ```groovy
 play {
     // ...
-    track = 'production' // or 'rollout' or 'beta' or 'alpha'
+    track = 'production' // or 'rollout' or 'beta' or 'alpha' or 'internal'
     userFraction = 0.2 // only necessary for 'rollout', in this case default is 0.1 (10% of the target)
 }
 ```
 
 When defining the track as (staged) `rollout` you can also define a ```userFraction``` which is the portion of users who should get the staged rollout version of the APK.
+
+### Drafts
+
+If you want to upload a new release without publishing it, you can use the optional ```draft``` parameter.
+
+```groovy
+play {
+    // ...
+    draft = true // optional, defaults to false
+}
+```
 
 ### Untrack conflicting versions
 

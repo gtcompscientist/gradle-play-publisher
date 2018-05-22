@@ -99,6 +99,19 @@ class PlayPublisherPluginTest {
     }
 
     @Test
+    void testDraftStatus() {
+        def project = TestHelper.evaluatableProject()
+
+        project.play {
+            draft true
+        }
+
+        project.evaluate()
+
+        assertEquals(true, project.extensions.findByName('play').draft, false)
+    }
+
+    @Test
     void testPublishListingTask() {
         def project = TestHelper.evaluatableProject()
 

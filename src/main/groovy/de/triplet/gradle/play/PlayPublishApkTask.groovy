@@ -38,6 +38,9 @@ class PlayPublishApkTask extends PlayPublishTask {
             release.setStatus('completed')
         }
 
+        if (extension.draft)
+            release.setStatus('draft')
+
         if (inputFolder.exists()) {
             def releaseNotes = new ArrayList<LocalizedText>()
 
