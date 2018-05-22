@@ -1,8 +1,8 @@
 package de.triplet.gradle.play
 
-import com.google.api.services.androidpublisher.model.ApkListing
 import com.google.api.services.androidpublisher.model.Image
 import com.google.api.services.androidpublisher.model.Listing
+import com.google.api.services.androidpublisher.model.LocalizedText
 import org.gradle.api.tasks.TaskAction
 
 class BootstrapTask extends PlayPublishTask {
@@ -72,26 +72,19 @@ class BootstrapTask extends PlayPublishTask {
     }
 
     def bootstrapWhatsNew() {
-        def apks = edits.apks()
-                .list(variant.applicationId, editId)
+        def productionTrack = edits.tracks()
+                .get(variant.applicationId, editId, "production")
                 .execute()
-                .getApks()
-        if (apks == null) {
-            return
-        }
-        def versionCode = apks.collect { apk -> apk.getVersionCode() }.max()
 
-        def apkListings = edits.apklistings()
-                .list(variant.applicationId, editId, versionCode)
-                .execute()
-                .getListings()
-        if (apkListings == null) {
+        if (productionTrack == null) {
             return
         }
 
-        for (ApkListing apkListing : apkListings) {
-            def language = apkListing.getLanguage()
-            def whatsNew = apkListing.getRecentChanges()
+        def latestRelease = productionTrack.getReleases().max { it.getVersionCodes().max() }
+
+        for (LocalizedText notes : latestRelease.getReleaseNotes()) {
+            def language = notes.getLanguage()
+            def whatsNew = notes.getText()
 
             def languageDir = new File(outputFolder, language)
             if (!languageDir.exists() && !languageDir.mkdirs()) {
