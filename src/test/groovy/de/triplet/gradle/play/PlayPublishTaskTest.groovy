@@ -5,6 +5,7 @@ import com.google.api.services.androidpublisher.AndroidPublisher
 import com.google.api.services.androidpublisher.model.Apk
 import com.google.api.services.androidpublisher.model.AppEdit
 import com.google.api.services.androidpublisher.model.Track
+import com.google.api.services.androidpublisher.model.TrackRelease
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
@@ -145,7 +146,7 @@ class PlayPublishTaskTest {
         }
         project.evaluate()
 
-        alphaTrack.setVersionCodes([41, 40])
+        alphaTrack.setReleases([new TrackRelease().setVersionCodes([41, 40])])
 
         project.tasks.publishApkRelease.service = publisherMock
         project.tasks.publishApkRelease.publishApks()
@@ -166,7 +167,7 @@ class PlayPublishTaskTest {
         }
         project.evaluate()
 
-        alphaTrack.setVersionCodes([43])
+        alphaTrack.setReleases([new TrackRelease().setVersionCodes([43])])
 
         project.tasks.publishApkRelease.service = publisherMock
         project.tasks.publishApkRelease.publishApks()
@@ -187,8 +188,8 @@ class PlayPublishTaskTest {
         }
         project.evaluate()
 
-        alphaTrack.setVersionCodes([40, 41])
-        betaTrack.setVersionCodes([39])
+        alphaTrack.setReleases([new TrackRelease().setVersionCodes([41, 40])])
+        betaTrack.setReleases([new TrackRelease().setVersionCodes([39])])
 
         project.tasks.publishApkRelease.service = publisherMock
         project.tasks.publishApkRelease.publishApks()
@@ -215,8 +216,8 @@ class PlayPublishTaskTest {
         }
         project.evaluate()
 
-        alphaTrack.setVersionCodes([44])
-        betaTrack.setVersionCodes([43])
+        alphaTrack.setReleases([new TrackRelease().setVersionCodes([44])])
+        betaTrack.setReleases([new TrackRelease().setVersionCodes([43])])
 
         project.tasks.publishApkRelease.service = publisherMock
         project.tasks.publishApkRelease.publishApks()
@@ -307,7 +308,7 @@ class PlayPublishTaskTest {
         return argThat(new TypeSafeMatcher<Track>() {
             @Override
             protected boolean matchesSafely(Track track) {
-                return track.getVersionCodes().size() == 0
+                return track.getReleases().sum { (it as TrackRelease).getVersionCodes().size() } == 0
             }
 
             @Override
@@ -321,7 +322,7 @@ class PlayPublishTaskTest {
         return argThat(new TypeSafeMatcher<Track>() {
             @Override
             protected boolean matchesSafely(Track track) {
-                return track.getVersionCodes().contains(code)
+                return track.getReleases().find {it.getVersionCodes().contains(code)} != null
             }
 
             @Override

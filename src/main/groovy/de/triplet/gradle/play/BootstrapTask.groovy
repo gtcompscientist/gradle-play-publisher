@@ -1,8 +1,8 @@
 package de.triplet.gradle.play
 
-import com.google.api.services.androidpublisher.model.ApkListing
 import com.google.api.services.androidpublisher.model.Image
 import com.google.api.services.androidpublisher.model.Listing
+import com.google.api.services.androidpublisher.model.LocalizedText
 import org.gradle.api.tasks.TaskAction
 
 class BootstrapTask extends PlayPublishTask {
@@ -72,26 +72,36 @@ class BootstrapTask extends PlayPublishTask {
     }
 
     def bootstrapWhatsNew() {
-        def apks = edits.apks()
+        def productionTrack = edits.tracks()
+                .get(variant.applicationId, editId, "production")
+                .execute()
+
+        if (productionTrack == null) {
+            return
+        }
+
+        def tracks = edits.tracks()
                 .list(variant.applicationId, editId)
                 .execute()
-                .getApks()
-        if (apks == null) {
+        if (tracks == null)
             return
+        def trackMap = [:]
+        for (track in tracks.getTracks()) {
+            for (release in track.getReleases()) {
+                def versionNoteMap = [:]
+                versionNoteMap[release.getVersionCodes().max()] = release.getReleaseNotes()
+                trackMap[track.getTrack()] = versionNoteMap
+            }
         }
-        def versionCode = apks.collect { apk -> apk.getVersionCode() }.max()
-
-        def apkListings = edits.apklistings()
-                .list(variant.applicationId, editId, versionCode)
-                .execute()
-                .getListings()
-        if (apkListings == null) {
+        if (trackMap.size() == 0)
             return
-        }
+        def maxVersionNotes = trackMap.max { track ->
+            track.key
+        }.value as List<LocalizedText>
 
-        for (ApkListing apkListing : apkListings) {
-            def language = apkListing.getLanguage()
-            def whatsNew = apkListing.getRecentChanges()
+        for (LocalizedText notes : maxVersionNotes) {
+            def language = notes.getLanguage()
+            def whatsNew = notes.getText()
 
             def languageDir = new File(outputFolder, language)
             if (!languageDir.exists() && !languageDir.mkdirs()) {

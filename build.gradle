@@ -13,8 +13,8 @@ repositories {
     google()
 }
 dependencies {
-    implementation 'com.android.tools.build:gradle:3.2.0-alpha15'
-    implementation('com.google.apis:google-api-services-androidpublisher:v2-rev76-1.23.0') {
+    implementation 'com.android.tools.build:gradle:2.3.0'
+    implementation('com.google.apis:google-api-services-androidpublisher:v3-rev3-1.23.0') {
         exclude group: 'com.google.guava', module: 'guava-jdk5'
     }
     implementation 'commons-io:commons-io:2.4'
