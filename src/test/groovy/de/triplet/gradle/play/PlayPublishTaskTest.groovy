@@ -144,6 +144,7 @@ class PlayPublishTaskTest {
             track 'beta'
             untrackOld true
         }
+
         project.evaluate()
 
         alphaTrack.setReleases([new TrackRelease().setVersionCodes([41, 40])])

@@ -5,6 +5,7 @@ import com.google.api.services.androidpublisher.AndroidPublisher
 import com.google.api.services.androidpublisher.model.AppEdit
 import com.google.api.services.androidpublisher.model.Bundle
 import com.google.api.services.androidpublisher.model.Track
+import com.google.api.services.androidpublisher.model.TrackRelease
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
@@ -13,8 +14,13 @@ import org.mockito.Mock
 
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
-import static org.mockito.Matchers.*
-import static org.mockito.Mockito.*
+import static org.mockito.Matchers.any
+import static org.mockito.Matchers.anyString
+import static org.mockito.Matchers.argThat
+import static org.mockito.Matchers.eq
+import static org.mockito.Mockito.doReturn
+import static org.mockito.Mockito.times
+import static org.mockito.Mockito.verify
 import static org.mockito.MockitoAnnotations.initMocks
 
 class PlayPublishBundleTaskTest {
@@ -138,9 +144,10 @@ class PlayPublishBundleTaskTest {
             track 'beta'
             untrackOld true
         }
+
         project.evaluate()
 
-        alphaTrack.setVersionCodes([41, 40])
+        alphaTrack.setReleases([new TrackRelease().setVersionCodes([41, 40])])
 
         project.tasks.publishBundleRelease.service = publisherMock
         project.tasks.publishBundleRelease.publishBundle()
@@ -161,7 +168,7 @@ class PlayPublishBundleTaskTest {
         }
         project.evaluate()
 
-        alphaTrack.setVersionCodes([43])
+        alphaTrack.setReleases([new TrackRelease().setVersionCodes([43])])
 
         project.tasks.publishBundleRelease.service = publisherMock
         project.tasks.publishBundleRelease.publishBundle()
@@ -180,10 +187,11 @@ class PlayPublishBundleTaskTest {
             track 'production'
             untrackOld true
         }
+
         project.evaluate()
 
-        alphaTrack.setVersionCodes([40, 41])
-        betaTrack.setVersionCodes([39])
+        alphaTrack.setReleases([new TrackRelease().setVersionCodes([41, 40])])
+        betaTrack.setReleases([new TrackRelease().setVersionCodes([39])])
 
         project.tasks.publishBundleRelease.service = publisherMock
         project.tasks.publishBundleRelease.publishBundle()
@@ -210,8 +218,8 @@ class PlayPublishBundleTaskTest {
         }
         project.evaluate()
 
-        alphaTrack.setVersionCodes([44])
-        betaTrack.setVersionCodes([43])
+        alphaTrack.setReleases([new TrackRelease().setVersionCodes([44])])
+        betaTrack.setReleases([new TrackRelease().setVersionCodes([43])])
 
         project.tasks.publishBundleRelease.service = publisherMock
         project.tasks.publishBundleRelease.publishBundle()
@@ -302,7 +310,7 @@ class PlayPublishBundleTaskTest {
         return argThat(new TypeSafeMatcher<Track>() {
             @Override
             protected boolean matchesSafely(Track track) {
-                return track.getVersionCodes().size() == 0
+                return track.getReleases().sum { (it as TrackRelease).getVersionCodes().size() } == 0
             }
 
             @Override
@@ -316,7 +324,7 @@ class PlayPublishBundleTaskTest {
         return argThat(new TypeSafeMatcher<Track>() {
             @Override
             protected boolean matchesSafely(Track track) {
-                return track.getVersionCodes().contains(code)
+                return track.getReleases().find {it.getVersionCodes().contains(code)} != null
             }
 
             @Override

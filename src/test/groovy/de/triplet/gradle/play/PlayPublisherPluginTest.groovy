@@ -108,7 +108,7 @@ class PlayPublisherPluginTest {
 
         project.evaluate()
 
-        assertEquals(true, project.extensions.findByName('play').draft, false)
+        assertEquals(true, project.extensions.findByName('play').draft)
     }
 
     @Test

@@ -1,6 +1,7 @@
 package de.triplet.gradle.play
 
 import org.gradle.api.Project
+import org.gradle.api.logging.Logging
 import org.gradle.testfixtures.ProjectBuilder
 
 class TestHelper {
@@ -13,6 +14,7 @@ class TestHelper {
 
     static Project evaluatableProject() {
         def project = fixtureProject()
+        Logging.getLogger(TestHelper).info("Project Directory: ${project.projectDir.absolutePath}")
         project.apply plugin: 'com.android.application'
         project.apply plugin: 'com.github.triplet.play'
         project.android {
