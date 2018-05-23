@@ -12,6 +12,12 @@ class TestHelper {
         return ProjectBuilder.builder().withProjectDir(FIXTURE_WORKING_DIR).build()
     }
 
+    static Project bundleProject() {
+        def project = evaluatableProject()
+        project.buildDir = new File('.')
+        return project
+    }
+
     static Project evaluatableProject() {
         def project = fixtureProject()
         Logging.getLogger(TestHelper).info("Project Directory: ${project.projectDir.absolutePath}")

@@ -139,7 +139,7 @@ class PlayPublishBundleTaskTest {
 
     @Test
     void whenPublishingToBeta_publishBundleRelease_removesBlockingVersionsFromAlpha() {
-        def project = TestHelper.evaluatableProject()
+        def project = TestHelper.bundleProject()
         project.play {
             track 'beta'
             untrackOld true
@@ -161,7 +161,7 @@ class PlayPublishBundleTaskTest {
 
     @Test
     void whenPublishingToBeta_publishBundleRelease_doesNotRemoveNonBlockingVersionsFromAlpha() {
-        def project = TestHelper.evaluatableProject()
+        def project = TestHelper.bundleProject()
         project.play {
             track 'beta'
             untrackOld true
@@ -182,7 +182,7 @@ class PlayPublishBundleTaskTest {
 
     @Test
     void whenPublishingToProduction_publishBundleRelease_removesBlockingVersionFromAlphaAndBeta() {
-        def project = TestHelper.evaluatableProject()
+        def project = TestHelper.bundleProject()
         project.play {
             track 'production'
             untrackOld true
@@ -211,7 +211,7 @@ class PlayPublishBundleTaskTest {
 
     @Test
     void whenPublishingToProduction_publishBundleRelease_doesNotRemoveNonBlockingVersionFromAlphaOrBeta() {
-        def project = TestHelper.evaluatableProject()
+        def project = TestHelper.bundleProject()
         project.play {
             track 'production'
             untrackOld true
@@ -239,7 +239,7 @@ class PlayPublishBundleTaskTest {
 
     @Test
     void whenFlagNotSet_publishBundleRelease_doesNotTouchOtherTracks() {
-        def project = TestHelper.evaluatableProject()
+        def project = TestHelper.bundleProject()
         project.play {
             track 'production'
             untrackOld false
@@ -265,7 +265,7 @@ class PlayPublishBundleTaskTest {
 
     @Test
     void testApplicationIdChange() {
-        def project = TestHelper.evaluatableProject()
+        def project = TestHelper.bundleProject()
 
         project.android {
             flavorDimensions 'pricing'
